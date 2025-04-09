@@ -8,17 +8,25 @@ include 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user_id = $_SESSION['user_id'];
+    $name = trim($_POST['name']);
+    $age = intval($_POST['age']);
+    $aadhar = trim($_POST['aadhar']);
+    $address = trim($_POST['address']);
+    $contact = trim($_POST['contact']);
+    $email = trim($_POST['email']);
     $message = trim($_POST['message']);
 
-    if (!empty($message)) {
-        $stmt = $conn->prepare("INSERT INTO complaints (user_id, message) VALUES (?, ?)");
-        $stmt->bind_param("is", $user_id, $message);
+    if (!empty($message) && !empty($name) && !empty($age) && !empty($aadhar) && !empty($address) && !empty($contact) && !empty($email)) {
+        $stmt = $conn->prepare("INSERT INTO complaints (user_id, name, age, aadhar, address, contact, email, message) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("isisssss", $user_id, $name, $age, $aadhar, $address, $contact, $email, $message);
         if ($stmt->execute()) {
             echo "<script>alert('Complaint submitted successfully!'); window.location.href='dashboard.html';</script>";
         } else {
             echo "<script>alert('Error submitting complaint.');</script>";
         }
         $stmt->close();
+    } else {
+        echo "<script>alert('All fields are required.');</script>";
     }
 }
 ?>
@@ -83,15 +91,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h1>File a Complaint</h1>
     <form action="complaint.php" method="POST" onsubmit="return validateForm()">
         <div class="container">
-            <input type="text" id="name" class="namearea" placeholder="Name" required>
-            <input type="text" id="age" class="namearea" placeholder="Age" required>
-            <input type="text" id="aadhar" class="namearea" placeholder="Aadhar Card number" required>
-            <input type="text" id="address" class="namearea" placeholder="Address" required>
-            <input type="text" id="contact" class="namearea" placeholder="Contact number" required>
-            <input type="email" id="email" class="namearea" placeholder="Email" required>
+            <input type="text" id="name" name="name" class="namearea" placeholder="Name" required>
+            <input type="text" id="age" name="age" class="namearea" placeholder="Age" required>
+            <input type="text" id="aadhar" name="aadhar" class="namearea" placeholder="Aadhar Card number" required>
+            <input type="text" id="address" name="address" class="namearea" placeholder="Address" required>
+            <input type="text" id="contact" name="contact" class="namearea" placeholder="Contact number" required>
+            <input type="email" id="email" name="email" class="namearea" placeholder="Email" required>
         </div>
         <div class="container2"> 
-            <textarea id="message" class="txtarea" name="message" placeholder="Enter your complaint" required></textarea>
+            <textarea id="message" name="message" class="txtarea" placeholder="Enter your complaint" required></textarea>
             <button type="submit">Submit</button>
             <a href="dashboard.html">Back to Dashboard</a>
         </div>
@@ -99,3 +107,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 </body>
 </html>
+
